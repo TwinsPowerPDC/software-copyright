@@ -1,0 +1,51 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 环境变量与密钥（勿提交）
+.env
+.env.*
+!.env.example
+
+# 编辑器 / IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Word 打开时产生的锁文件与临时文件（模板/申请表本地编辑时常见）
+~$*.doc
+~$*.docx
+~$*.rtf
+
+# 可选：本地生成的中间产物目录（若你在仓库根下放此类目录，取消下一行注释）
+# out/
+# output/
