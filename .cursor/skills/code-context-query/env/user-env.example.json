@@ -1,0 +1,5 @@
+{
+  "_doc": "复制为 user-env.json 并填写本机 SSH 用户与私钥路径；勿将 user-env.json 提交到公开仓库。",
+  "ssh_user": "your_ssh_user",
+  "ssh_identity": "/path/to/your/private_key"
+}

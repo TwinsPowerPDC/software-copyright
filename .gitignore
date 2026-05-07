@@ -17,7 +17,8 @@ __pycache__/
 .Python
 venv/
 .venv/
-env/
+# 仅忽略仓库根目录下名为 env 的虚拟环境目录（避免误伤 .cursor/.../env/）
+/env/
 .env/
 *.egg-info/
 .eggs/
@@ -34,6 +35,9 @@ htmlcov/
 .env
 .env.*
 !.env.example
+
+# code-context-query：本机 SSH 配置（见 env/user-env.example.json）
+.cursor/skills/code-context-query/env/user-env.json
 
 # 编辑器 / IDE
 .idea/

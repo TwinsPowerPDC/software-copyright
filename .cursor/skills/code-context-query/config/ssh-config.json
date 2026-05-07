@@ -1,0 +1,9 @@
+{
+  "_doc": "与 Cookit shared/ssh-config.json 中 code-context 段对齐；独立项目可只保留本服务。",
+  "services": {
+    "code-context": {
+      "host": "8.136.217.81",
+      "remote_dir": "/code-context"
+    }
+  }
+}
