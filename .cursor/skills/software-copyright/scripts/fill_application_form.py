@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""申请表填充脚本 — 读取 .docx 模板，替换 {变量} 占位符。"""
+"""申请表填充脚本 — 读取 .docx 模板，替换 {变量} 占位符（共 6 处）。"""
 
 import argparse
 import sys
 from pathlib import Path
+
+EXPECTED_PLACEHOLDERS = 6
 
 
 def parse_args():
@@ -29,6 +31,14 @@ def parse_args():
     parser.add_argument(
         '--tech', required=True,
         help='软件技术特点（50-150字）'
+    )
+    parser.add_argument(
+        '--dev-complete-date', required=True,
+        help='开发完成日期（与申请表格式一致，如 2024年9月25日）'
+    )
+    parser.add_argument(
+        '--first-publish-date', required=True,
+        help='首次发表日期（与申请表格式一致；未发表等口径由用户确认后原样填入）'
     )
     parser.add_argument(
         '--output', required=True, type=Path, metavar='DOCX',
@@ -96,12 +106,14 @@ def xml_level_replace(template_path, field_values, output_path):
         print('XML 中也未找到 "变量" 文本，模板可能已损坏', file=sys.stderr)
         return 0
 
-    # 按文档出现顺序，根据上下文关键词映射到对应替换值
+    # 按文档出现顺序，根据上下文关键词映射到对应替换值（与 patch 后模板一致）
     context_keywords = [
         (['软件名称', '全称'], '软件全称', field_values['软件全称']),
-        (['简称'],             '软件简称', field_values['软件简称']),
-        (['主要功能'],         '主要功能', field_values['主要功能']),
-        (['技术特点'],         '技术特点', field_values['技术特点']),
+        (['软件简称'], '软件简称', field_values['软件简称']),
+        (['开发完成日期'], '开发完成日期', field_values['开发完成日期']),
+        (['首次发表日期'], '首次发表日期', field_values['首次发表日期']),
+        (['主要功能'], '主要功能', field_values['主要功能']),
+        (['技术特点'], '技术特点', field_values['技术特点']),
     ]
 
     replacements = []
@@ -205,14 +217,18 @@ def main():
     field_values = {
         '软件全称': args.name,
         '软件简称': args.short_name,
+        '开发完成日期': args.dev_complete_date,
+        '首次发表日期': args.first_publish_date,
         '主要功能': args.features,
         '技术特点': args.tech,
     }
 
-    # 上下文关键词 → 字段值映射（按模板段落顺序）
+    # 上下文关键词 → 字段值映射（与模板中 {变量} 出现顺序一致）
     context_map = [
         ('软件名称', '软件全称', field_values['软件全称']),
         ('软件简称', '软件简称', field_values['软件简称']),
+        ('开发完成日期', '开发完成日期', field_values['开发完成日期']),
+        ('首次发表日期', '首次发表日期', field_values['首次发表日期']),
         ('主要功能', '主要功能', field_values['主要功能']),
         ('技术特点', '技术特点', field_values['技术特点']),
     ]
@@ -232,22 +248,32 @@ def main():
     for table in doc.tables:
         total_replaced += process_table_recursive(table)
 
-    if total_replaced == 4:
+    if total_replaced == EXPECTED_PLACEHOLDERS:
         # python-docx 层面替换成功
-        print(f'\n共替换 {total_replaced} 个 {{变量}} 占位符（预期为 4 个）', file=sys.stderr)
+        print(
+            f'\n共替换 {total_replaced} 个 {{变量}} 占位符（预期为 {EXPECTED_PLACEHOLDERS} 个）',
+            file=sys.stderr,
+        )
         doc.save(str(args.output))
         print(str(args.output))
     else:
         # python-docx 未完全替换（0 个或部分），回退到 XML 层面替换
         if total_replaced > 0:
-            print(f'\npython-docx 仅替换 {total_replaced}/4 个，放弃部分结果，回退到 XML 层面替换...', file=sys.stderr)
+            print(
+                f'\npython-docx 仅替换 {total_replaced}/{EXPECTED_PLACEHOLDERS} 个，'
+                '放弃部分结果，回退到 XML 层面替换...',
+                file=sys.stderr,
+            )
         else:
             print('\npython-docx 未找到占位符，回退到 XML 层面替换...', file=sys.stderr)
         xml_replaced = xml_level_replace(
             str(args.template), field_values, str(args.output)
         )
-        print(f'\n共替换 {xml_replaced} 个 {{变量}} 占位符（预期为 4 个）', file=sys.stderr)
-        if xml_replaced != 4:
+        print(
+            f'\n共替换 {xml_replaced} 个 {{变量}} 占位符（预期为 {EXPECTED_PLACEHOLDERS} 个）',
+            file=sys.stderr,
+        )
+        if xml_replaced != EXPECTED_PLACEHOLDERS:
             print('替换数量与预期不符，请打开成品文件检查', file=sys.stderr)
 
     # 修正 LibreOffice 转换导致的边框样式错误

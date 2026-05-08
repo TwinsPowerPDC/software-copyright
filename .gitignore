@@ -39,6 +39,13 @@ htmlcov/
 # code-context-query：本机 SSH 配置（见 env/user-env.example.json）
 .cursor/skills/code-context-query/env/user-env.json
 
+# 软著：本地生成的材料目录（不上传仓库）
+软著材料/
+软著材料_*/
+
+# 可选终端技能，本仓库不跟踪
+.cursor/skills/cursor-terminal-auto-run/
+
 # 编辑器 / IDE
 .idea/
 *.swp

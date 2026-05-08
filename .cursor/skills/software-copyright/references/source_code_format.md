@@ -270,7 +270,9 @@ export default ClueList;
 
 ## 七、文件选取策略（供 AI 参考）
 
-读取项目源代码时，按以下策略选取文件：
+**代码来源**：默认通过 **code-context-query**（远端 `list` / `overview` / `search` / `read`）按用户声明的产品线（TP/TPR）与产品端定位仓库与路径；详细流程与 `project_id` 映射见主 Skill `references/code_context_product_map.md` 与阶段 4.2。选取完成后将内容镜像到本机再调用 `build_source_doc.py`，**不要用本机 Glob 替代**对远端仓库的检索（除非用户明确要求仅以某本地目录为准，则须在对话中记录该例外）。
+
+读取（或镜像后的）项目源代码时，按以下策略选取文件：
 
 1. **后端 Service 层**：选取业务最复杂的3-5个 Service 实现类（通常是核心模块的）
 2. **后端 Mapper/Repository**：与选中的 Service 对应的 Mapper 接口
